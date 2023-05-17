@@ -1,19 +1,19 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-
-    if (authHeader) {
-        const token = authHeader.split(' ')[1];
-
-        jwt.verify(token, process.env.SECRET, (err, user) => {
-            if (err) {
-                return res.status(498).json({"msg":"Token is not valid"});
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        jwt.verify(token, process.env.EPYTODO_SECRET, (error, id) => {
+            if (error)
+                return res.status(401).json({ msg: 'Token is not valid' });
+            if (req.body.id && req.body.id !== id)
+                throw 'Invalid Credentials';
+            else {
+                req.userID = id;
+                next();
             }
-            req.user = user["id"]
-            next();
         });
-    } else {
-        res.status(498).json({"msg":"No token , authorization denied"});
+    } catch (error) {
+        res.status(401).json({ msg: 'No token, authorization denied' });
     }
 };
