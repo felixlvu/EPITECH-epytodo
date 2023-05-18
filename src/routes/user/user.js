@@ -1,72 +1,36 @@
-const express = require('express');
-const { check_user_id } = require('../../middleware/notFound');
-const regex = require('../../config/regex');
-const {
-    getAllTodoByUser,
-    getUserById,
-    getUserByEmail,
-    modifyUserById,
-    deleteUserById
-} = require('./user.query');
-const userRouter = express.Router();
-const usersRouter = express.Router();
+const {all_user, all_todo, get_info_id_or_mail, delete_user_by_id, update_user_by_id} = require('./user.query');
+const auth = require('../../middleware/auth');
 
-userRouter.get('/', (req, res) => {
-    getUserById(res, req.userID.id);
-});
+module.exports = function(app, bcrypt) {
+    app.get('/user', auth, (req, res) => {
+        all_user(res);
+    });
+    app.get('/user/todos', auth, (req, res) => {
+        all_todo(res, req.user);
+    });
+    app.get('/user/:data', auth, (req, res) => {
+        var data = req.params.data;
 
-userRouter.get('/todos', (req, res) => {
-    getAllTodoByUser(res, req.userID.id);
-});
+        get_info_id_or_mail(res, data);
+    });
+    app.delete('/user/:id', auth, (req, res) => {
+        var id = req.params.id;
 
-usersRouter.param('id', (req, res, next, id) => {
-    if (isNaN(id))
-        next('route');
-    else
-        next();
-});
+        delete_user_by_id(res, id);
+    });
+    app.put('/user/:id', auth, (req, res) => {
+        var id = req.params.id;
+        var mail = req.body["email"];
+        var mname = req.body["name"];
+        var fname = req.body["firstname"];
+        var pwd = req.body["password"];
 
-usersRouter.param('email', (req, res, next, id) => {
-    if (id.match(regex))
-        next();
-    else
-        next('route');
-})
-
-usersRouter.get('/:id', (req, res) => {
-    var id = req.params.id;
-
-    if (!id)
-        return res.status(400).json({ msg: 'Invalid Credentials' });
-    getUserById(res, id);
-});
-
-usersRouter.get('/:email', (req, res) => {
-    var email = req.params.email;
-
-    if (!email)
-        return res.status(400).json({ msg: 'Invalid Credentials' });
-    getUserByEmail(res, email);
-});
-
-usersRouter.put('/:id', check_user_id, (req, res) => {
-    var email = req.body.email;
-    var password = req.body.password;
-    var firstname = req.body.firstname;
-    var name = req.body.name;
-    var id = req.params.id;
-
-    if (!id || !email || !password || !firstname || !name || !email.match(regex))
-        return res.status(401).json({ msg: 'Invalid Credentials' });
-    modifyUserById(res, id, email, password, firstname, name);
-});
-
-usersRouter.delete('/:id', check_user_id, (req, res) => {
-    var id = req.params.id;
-
-    if (!id)
-        return res.status(400).json({ msg: 'Invalid Credentials' });
-    deleteUserById(res, req.params.id);
-});
-
-module.exports = { userRouter, usersRouter };
+        if (id === undefined || mail === undefined || mname === undefined  ||
+        fname === undefined || pwd === undefined) {
+            res.status(500).json({"msg":"internal server error"});
+            return;
+        }
+        pwd = bcrypt.hashSync(pwd, 10);
+        update_user_by_id(res, id, mail, pwd, mname, fname);
+    });
+}

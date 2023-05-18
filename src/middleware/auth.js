@@ -1,19 +1,18 @@
 const jwt = require('jsonwebtoken');
+const user = require('dotenv').config();
 
 module.exports = (req, res, next) => {
-    try {
-        const token = req.headers.authorization.split(' ')[1];
-        jwt.verify(token, process.env.EPYTODO_SECRET, (error, id) => {
-            if (error)
-                return res.status(401).json({ msg: 'Token is not valid' });
-            if (req.body.id && req.body.id !== id)
-                throw 'Invalid Credentials';
-            else {
-                req.userID = id;
-                next();
+    const token = req.headers.authorization;
+
+    if (token) {
+        jwt.verify(token.split(' ')[1], process.env.SECRET, function(err) {
+            if (err) {
+                return res.status(498).json({"msg":"Token is not valid"});
             }
+            req.user = user["id"]
+            next();
         });
-    } catch (error) {
-        res.status(401).json({ msg: 'No token, authorization denied' });
+    } else {    
+        res.status(498).json({"msg":"No token , authorization denied"});
     }
 };

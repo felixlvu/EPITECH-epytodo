@@ -1,28 +1,28 @@
 {
-  "name": "epytodo",
+  "name": "b-web-200-tls-2-1-epytodo-antonin.campi",
   "version": "1.0.0",
-  "description": "api for epitech project",
+  "description": "epytodo",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start": "node ./src/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ZerLock/Epytodo.git"
+    "url": "git+https://github.com/EpitechPromo2027/B-WEB-200-TLS-2-1-epytodo-antonin.campi.git"
   },
-  "author": "dubosclard leo & duc justin",
+  "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ZerLock/Epytodo/issues"
+    "url": "https://github.com/EpitechPromo2027/B-WEB-200-TLS-2-1-epytodo-antonin.campi/issues"
   },
-  "homepage": "https://github.com/ZerLock/Epytodo#readme",
+  "homepage": "https://github.com/EpitechPromo2027/B-WEB-200-TLS-2-1-epytodo-antonin.campi#readme",
   "dependencies": {
-    "bcrypt": "^5.0.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.0",
-    "express": "^4.17.2",
-    "jsonwebtoken": "^8.5.1",
-    "mysql2": "^2.3.3"
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "dotenv": "^10.0.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mysql2": "^2.3.0",
+    "qs": "^6.11.0"
   }
 }
